@@ -1,0 +1,19 @@
+- name: PHP build
+  hosts: 192.168.56.105
+
+  tasks:
+  - name:
+    shell: whoami
+    register: output
+
+  - debug: var=output
+
+  - git:
+      repo: https://github.com/bschethan86/linux.git
+      dest: /data/
+      version: master
+
+  - shell: docker build -t php:v1 /data/; docker run -itd --rm --name=php-webserver -p 85:80 php:v1
+    register: dockeroutput
+
+  - debug: var=dockeroutput

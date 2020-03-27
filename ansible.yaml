@@ -1,0 +1,35 @@
+- name: test playbook
+  hosts: all
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  tasks:
+  - name: ensure docker service areup and  running
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: ensure dir is exists
+    file:
+      path:/clone
+      state: directory
+
+  - name: clone the data from git hub
+    git:
+      repo: https://github.com/ZishHaider/Myproject.git
+      dest: /clone
+      version: master
+      force: yes
+    register: git_output
+
+  - debug:
+      var: git_output
+
+  - name: start the container
+    shell:  docker run -itd --rm --name=web1 -p 85:80 httpd
+    register: docker_output
+
+  - debug:
+      var: docker_output
